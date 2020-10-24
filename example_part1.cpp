@@ -1,3 +1,4 @@
+#include <chrono>
 #include <thread>
 #include <string>
 
@@ -7,11 +8,11 @@
 
 class HugeClass
 {
-public:
 	int a;
 	std::string b;
 	float c;
 	int d;
+public:
 	HugeClass() {}
 };
 
@@ -41,7 +42,12 @@ int main(int argc, char *argv[])
 	example_part3_function();
 
 	// infinite loop
-	while(1);
+	while (1)
+	{
+		// allocate additional 20 bytes every 2 seconds
+		char * c = new char[20];
+		std::this_thread::sleep_for(std::chrono::seconds(2));
+	}
 
 	return 1;
 }

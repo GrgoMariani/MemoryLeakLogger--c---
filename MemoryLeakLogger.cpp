@@ -1,16 +1,25 @@
 #include <algorithm>
+#if defined(_WIN32) || defined(_WIN64) || defined(__MINGW32__) || defined(__MINGW64__) || defined(__CYGWIN__)
 #include <WinSock2.h>
 #include <Ws2tcpip.h>
+#endif
+#if defined(__linux__)
+#include <sys/types.h>
+#include <sys/socket.h>
+#include <arpa/inet.h>
+#include <netinet/in.h>
+#include <unistd.h>
+#endif
 #include <chrono>
 #include <thread>
 #include <map>
 #include <tuple>
 #include <string>
+#include <cstring>
 #include <vector>
 #include <iostream>
 #include <ctime>
 
-#define MEMORY_LEAK_LOGGER_CLASS
 #include "MemoryLeakLogger.h"
 
 class MemoryLeakLogger
@@ -99,8 +108,15 @@ void start_memory_leak_UDP_client(const char* destIP, const int port, const int 
 	const char* srcIP = "127.0.0.1";
 	sockaddr_in dest;
 	sockaddr_in local;
+
+#if defined(_WIN32) || defined(_WIN64) || defined(__MINGW32__) || defined(__MINGW64__) || defined(__CYGWIN__)
 	WSAData data;
 	WSAStartup(MAKEWORD(2, 2), &data);
+	SOCKET s;
+#endif
+#if defined(__linux__)
+	int s;
+#endif
 
 	local.sin_family = AF_INET;
 	inet_pton(AF_INET, srcIP, &local.sin_addr.s_addr);
@@ -110,7 +126,7 @@ void start_memory_leak_UDP_client(const char* destIP, const int port, const int 
 	inet_pton(AF_INET, destIP, &dest.sin_addr.s_addr);
 	dest.sin_port = htons(port);
 
-	SOCKET s = socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP);
+	s = socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP);
 	bind(s, (sockaddr *)&local, sizeof(local));
 
 	while (true)
@@ -134,9 +150,13 @@ void start_memory_leak_UDP_client(const char* destIP, const int port, const int 
 			std::cerr << std::ctime(&curr_time) << " " << __FILE__ << ":" << __LINE__ << " Something happened : "<< e.what() << std::endl;
 		}
 	}
-	
+#if defined(_WIN32) || defined(_WIN64) || defined(__MINGW32__) || defined(__MINGW64__) || defined(__CYGWIN__)
 	closesocket(s);
 	WSACleanup();
+#endif
+#if defined(__linux__)
+	close(s);
+#endif
 }
 
 

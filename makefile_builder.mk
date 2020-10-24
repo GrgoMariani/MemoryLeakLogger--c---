@@ -19,6 +19,7 @@ else
 # Linux
 ECHO 			= echo
 ASM_FLAGS 		= -felf
+LINKER_FLAGS 	= -pthread
 endif
 
 # ANSI color palette
@@ -60,7 +61,7 @@ ORIG_ASM_OBJS		:= $(ASM_TO_COMPILE:%.asm=$(orig_o_dir)/asm/%.o)
 INCLUDE_DIRS 		:=
 
 C_FLAGS 	:= -std=c11	  -fPIC -Wall -O3
-CXX_FLAGS 	:= -std=c++11 -fPIC -Wall -O3 -Weffc++ 
+CXX_FLAGS 	:= -std=c++11 -fPIC -Wall -O3 -Weffc++
 
 DEPFLAGS_DEFAULT	 = -MT $@ -MMD -MP
 DEPFLAGS_C_ORIG 	 = $(DEPFLAGS_DEFAULT) -MF $(orig_d_dir)/c/$*.d
