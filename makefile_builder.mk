@@ -5,7 +5,10 @@ C_TO_COMPILE 	= 		# to build as these when
 CPP_TO_COMPILE	= 		# calling the makefile_builder
 EXE_TARGET		= 		# also define the EXE_TARGET
 
-
+ASM 	= nasm
+CC  	= clang
+CXX 	= clang++
+LL 		= clang++
 
 WRAPPER_SOURCES_C	= 
 WRAPPER_SOURCES_CPP = 
@@ -78,18 +81,18 @@ include $(wildcard $(DEPFILES))
 #  ------------------- Compile objects -------------------
 $(orig_o_dir)/asm/%.o : %.asm makefile_builder.mk | $$(@D)/.
 	@$(ECHO) $(ANSI_YELLOW) ----------- Assembling : $@ ----------------- $(ANSI_DEFAULT)
-	nasm -w+all $(ASM_FLAGS) $< -o $@
+	$(ASM) -w+all $(ASM_FLAGS) $< -o $@
 
 $(orig_o_dir)/c/%.o : %.c makefile_builder.mk | $$(@D)/. $(orig_d_dir)/c/$$(*D)/.
 	@$(ECHO) $(ANSI_YELLOW) ----------- Compiling : $@ ----------------- $(ANSI_DEFAULT)
-	gcc $(C_FLAGS) $(DEPFLAGS_C_ORIG) $(INCLUDE_DIRS) -c $< -o $@
+	$(CC) $(C_FLAGS) $(DEPFLAGS_C_ORIG) $(INCLUDE_DIRS) -c $< -o $@
 
 $(orig_o_dir)/cpp/%.o : %.cpp makefile_builder.mk | $$(@D)/. $(orig_d_dir)/cpp/$$(*D)/.
 	@$(ECHO) $(ANSI_YELLOW) ----------- Compiling : $@ ----------------- $(ANSI_DEFAULT)
-	g++ $(CXX_FLAGS) $(DEPFLAGS_CPP_ORIG) $(INCLUDE_DIRS) -c $< -o $@
+	$(CXX) $(CXX_FLAGS) $(DEPFLAGS_CPP_ORIG) $(INCLUDE_DIRS) -c $< -o $@
 
 #  ------------------- link final target -------------------
 $(TARGET): $(ORIG_ASM_OBJS) $(ORIG_C_OBJS) $(ORIG_CPP_OBJS) makefile | $$(@D)/.
 	@$(ECHO) $(ANSI_GREEN) ----------- Linking : $@ ----------------- $(ANSI_DEFAULT)
-	g++ $(ORIG_ASM_OBJS) $(ORIG_C_OBJS) $(ORIG_CPP_OBJS) $(LINKER_FLAGS) -o $@ -s
+	$(LL) $(ORIG_ASM_OBJS) $(ORIG_C_OBJS) $(ORIG_CPP_OBJS) $(LINKER_FLAGS) -o $@ -s
 	@$(ECHO) $(ANSI_RED) ----------- DONE: Target $@ ----------- $(ANSI_DEFAULT)
